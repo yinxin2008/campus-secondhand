@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="循环集市 · 校园二手物品流转与闲置发布平台（大一课程实践项目，纯前端演示）">
+  <title>循环集市 · 校园二手物品流转平台</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+  <!-- ===== 顶栏 ===== -->
+  <header class="site-header">
+    <div class="container header-inner">
+      <a class="brand" href="#/home" aria-label="循环集市 首页">
+        <svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+             stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <path d="M17 2.5l3.5 3.5L17 9.5"></path>
+          <path d="M20.5 6H8a4.5 4.5 0 0 0-4.5 4.5"></path>
+          <path d="M7 21.5L3.5 18 7 14.5"></path>
+          <path d="M3.5 18H16a4.5 4.5 0 0 0 4.5-4.5"></path>
+        </svg>
+        <span class="brand-name">循环集市</span>
+        <span class="brand-sub">校园二手物品<br>流转与闲置发布平台</span>
+      </a>
+      <a class="btn btn-ghost header-cta" href="#/publish">＋ 发布闲置</a>
+    </div>
+  </header>
+
+  <main class="container">
+
+    <!-- ===== 视图一：首页（物品展示 / 分类 / 搜索） ===== -->
+    <section class="view" data-route="home">
+
+      <div class="hero">
+        <svg class="hero-ring" viewBox="0 0 200 200" fill="none" stroke="currentColor"
+             stroke-width="3" stroke-linecap="round" aria-hidden="true">
+          <circle cx="100" cy="100" r="88" stroke-dasharray="24 18"></circle>
+          <circle cx="100" cy="100" r="60" stroke-dasharray="2 14"></circle>
+          <path d="M100 12v18M100 170v18M12 100h18M170 100h18"></path>
+        </svg>
+        <div class="hero-copy">
+          <span class="hero-kicker">循环集市 · 让闲置流动起来</span>
+          <h1 class="hero-title">旧物不闲置<br>好物再出发</h1>
+          <p class="hero-desc">
+            教材、台灯、球拍、背包……学长学姐的闲置，正是你需要的宝贝。
+            一键发布、轻松逛逛，让校园里的每件旧物都能找到下一位主人。
+          </p>
+          <div class="hero-stats" aria-label="平台模拟数据">
+            <span class="stat-sticker"><span class="stat-num">10</span>件在售闲置</span>
+            <span class="stat-sticker"><span class="stat-num">6</span>大校园分类</span>
+            <span class="stat-sticker"><span class="stat-num">687</span>次累计浏览</span>
+          </div>
+          <div class="search-wrap">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                 stroke-width="2.2" stroke-linecap="round" aria-hidden="true">
+              <circle cx="11" cy="11" r="7"></circle>
+              <path d="M20 20l-4-4"></path>
+            </svg>
+            <input id="searchInput" type="search" placeholder="搜索：高数、台灯、篮球…"
+                   aria-label="搜索闲置物品">
+          </div>
+        </div>
+      </div>
+
+      <!-- 分类栏（app.js 渲染） -->
+      <div id="categoryBar" class="category-bar" aria-label="物品分类筛选"></div>
+
+      <!-- 商品网格（app.js 渲染） -->
+      <section id="itemGrid" class="grid" aria-label="闲置物品列表"></section>
+
+      <!-- 搜索/筛选空态 -->
+      <div id="emptyState" class="empty" hidden>
+        <p class="empty-title">没有找到相关物品</p>
+        <p class="empty-desc">换个关键词试试，或者把你的闲置发布上来吧～</p>
+        <a class="btn btn-primary" href="#/publish">发布一件闲置</a>
+      </div>
+
+    </section>
+
+    <!-- ===== 视图二：物品详情 ===== -->
+    <section class="view" data-route="detail" hidden>
+      <button id="backBtn" class="back-btn" type="button">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+             stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <path d="M19 12H5"></path><path d="M12 19l-7-7 7-7"></path>
+        </svg>
+        返回首页
+      </button>
+      <div id="detailContent"></div>
+    </section>
+
+    <!-- ===== 视图三：发布闲置 + 我的发布 ===== -->
+    <section class="view" data-route="publish" hidden>
+      <h2 class="view-title">发布闲置</h2>
+      <p class="view-sub">填写物品信息，发布后立即展示在首页（数据仅保存在本机浏览器）</p>
+
+      <form id="publishForm" class="publish-card" novalidate>
+        <div class="field-row">
+          <div class="field">
+            <label for="pTitle">物品名称 <span class="req">*</span></label>
+            <input id="pTitle" type="text" maxlength="30" placeholder="例如：高等数学 上册">
+          </div>
+          <div class="field">
+            <label for="pCategory">物品分类 <span class="req">*</span></label>
+            <select id="pCategory">
+              <option value="">请选择分类</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="field-row">
+          <div class="field">
+            <label for="pPrice">价格（元） <span class="req">*</span></label>
+            <input id="pPrice" type="number" min="0.1" max="99999" step="0.1" placeholder="例如：15">
+          </div>
+          <div class="field">
+            <label for="pCondition">物品成色</label>
+            <select id="pCondition">
+              <option>全新</option>
+              <option selected>九成新</option>
+              <option>八成新</option>
+              <option>七成新及以下</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="field">
+          <label for="pDesc">物品描述</label>
+          <textarea id="pDesc" maxlength="200" placeholder="写点使用感受、购买时间、转手原因…"></textarea>
+        </div>
+
+        <div class="field-row">
+          <div class="field">
+            <label for="pContact">联系人 <span class="req">*</span></label>
+            <input id="pContact" type="text" maxlength="20" placeholder="例如：小林（QQ 12345678）">
+          </div>
+          <div class="field">
+            <label for="pDorm">宿舍楼栋 <span class="req">*</span></label>
+            <input id="pDorm" type="text" maxlength="20" placeholder="例如：3栋407">
+          </div>
+        </div>
+
+        <div class="field">
+          <label for="pImage">物品图片（可选，不超过 1MB）</label>
+          <div class="img-picker">
+            <input id="pImage" type="file" accept="image/*">
+            <img id="imgPreview" class="img-preview" alt="图片预览" hidden>
+            <span class="img-hint">不上传图片时，将自动使用分类默认图</span>
+          </div>
+        </div>
+
+        <button class="btn btn-primary btn-submit" type="submit">确认发布</button>
+      </form>
+
+      <h3 class="view-title view-title-sm">我的发布</h3>
+      <div id="myEmpty" class="empty empty-sm" hidden>
+        <p class="empty-desc">还没有发布过闲置，去发布第一件吧～</p>
+      </div>
+      <div id="myList" class="my-list"></div>
+    </section>
+
+  </main>
+
+  <!-- ===== 移动端底部导航 ===== -->
+  <nav class="tabbar" aria-label="底部导航">
+    <a class="tab-item" data-tab="home" href="#/home">
+      <svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+           stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+        <path d="M3 10.5L12 3l9 7.5"></path>
+        <path d="M5 9.5V21h5v-6h4v6h5V9.5"></path>
+      </svg>
+      首页
+    </a>
+    <a class="tab-item" data-tab="publish" href="#/publish">
+      <svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+           stroke-width="2.2" stroke-linecap="round" aria-hidden="true">
+        <circle cx="12" cy="12" r="9"></circle>
+        <path d="M12 8v8M8 12h8"></path>
+      </svg>
+      发布
+    </a>
+  </nav>
+
+  <!-- ===== 页脚 ===== -->
+  <footer class="site-footer">
+    循环集市 · 校园二手物品流转与闲置发布平台 · 大一课程实践项目<br>
+    本站为课程练手演示，全部物品与数据均为模拟，不含真实交易
+  </footer>
+
+  <!-- 全局提示 -->
+  <div id="toast" class="toast" role="status" aria-live="polite"></div>
+
+  <script src="data.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
